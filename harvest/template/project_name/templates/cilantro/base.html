@@ -1,0 +1,28 @@
+{% extends "cilantro/_base.html" %}
+
+{# Extends the block to include a namespaced path for project-level modules #}
+{% block jsconfig %}
+    {{ block.super }}
+    <script>
+        require['paths'] = {
+            'project': '{{ JAVASCRIPT_URL }}'
+        };
+    </script>
+{% endblock jsconfig %}
+
+{% block content %}
+    <div class=container-fluid>
+        <div class=row-fluid>
+            <div class=span12>
+                <div class=hero-unit>
+                    <h1 class=heading>Welcome to Harvest</h1>
+                    <h2>Harvest <em>is</em> data discovery for humans.</h2>
+                    <p>Designed by and for biomedical researchers, The Harvest
+                    Stack is an open source toolkit for building web
+                    applications for integrating, discovering, and reporting
+                    data.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

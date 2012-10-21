@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+
+import harvest
+from harvest.commands import init
+from collections import OrderedDict
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+
+# Top-level commands
+commands = OrderedDict([
+    ('init', init),
+])
+
+# Top-level argument parser
+parser = ArgumentParser(description=harvest.__doc__,
+    version='Harvest v{}'.format(harvest.__version__),
+    formatter_class=ArgumentDefaultsHelpFormatter)
+
+# Add sub-parsers for each command
+subparsers = parser.add_subparsers(dest='command')
+
+# Populate subparsers
+for key in commands:
+    module = commands[key]
+    # Add it by name
+    subparser = subparsers.add_parser(key, add_help=False,
+        formatter_class=ArgumentDefaultsHelpFormatter)
+    # Update subparser with properties of module parser. Keep
+    # track of the generated `prog` since it is relative to
+    # the top-level command
+    prog = subparser.prog
+    subparser.__dict__.update(module.parser.__dict__)
+    subparser.prog = prog
+
+# Parse command-line arguments
+options = parser.parse_args()
+
+# Get the module and call the main function
+commands[options.command].parser.handle(options)

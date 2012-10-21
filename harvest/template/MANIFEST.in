@@ -1,0 +1,18 @@
+include requirements.txt
+include wsgi.py
+include bin/manage.py
+include Makefile
+
+graft _site
+graft server
+
+global-exclude .DS_Store
+
+exclude {{ project_name }}/static/scripts/javascript/app.build.js
+exclude {{ project_name }}/static/scripts/javascript/min/build.txt
+exclude {{ project_name }}/conf/local_settings.py
+
+prune _site/static
+prune {{ project_name }}/static/scripts/coffeescript
+prune {{ project_name }}/static/stylesheets/scss
+prune tests
