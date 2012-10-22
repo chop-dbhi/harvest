@@ -42,7 +42,10 @@ def managepy_chmod():
 
 def virtualenv(path):
     "Wraps a function and prefixes the call with the virtualenv active."
-    activate = os.path.join(path, 'bin/activate')
+    if path is None:
+        activate = None
+    else:
+        activate = os.path.join(path, 'bin/activate')
 
     def decorator(func):
         @wraps(func)
