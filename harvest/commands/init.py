@@ -85,6 +85,7 @@ def parser(options):
         hidden_output.append('stdout')
 
     with hide(*hidden_output):
+        env_path = '.'
         full_env_path = None
 
         # Check for virtualenv
