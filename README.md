@@ -11,8 +11,12 @@ pip install harvest
 ### Start A New Project
 
 ```python
-harvest init myproject
+$ harvest init [--verbose] [--no-env] [--no-input] project_name
 ```
+
+_`project_name` must be a valid Python identifier which means it can
+only contain alphanumeric characters and underscores and cannot start
+with a number._
 
 This command performs the following steps:
 
@@ -21,12 +25,23 @@ This command performs the following steps:
 - Create a starter project structure using the built-in Harvest template
 - Install the base dependencies
 - Sync and migrate a SQLite database, this requires you to answer a couple
-prompts
+prompts (unless `--no-input` is passed)
 - Collect the static files (mainly due to Cilantro)
 
+**Options**
+
+`--verbose` - Pass to get all output printed to stdout.
+
+`--no-env` - Pass to prevent creating a virtualenv. If set, it is assumed the
+virtualenv is active prior to running this command to ensure dependencies are
+installed in the correct site-packages directory.
+
+`--no-input` - Pass to prevent being prompted during the setup. This
+currently includes the prompt for setting up a superuser during the database
+sync. This is primarily useful for performing scripted builds.
 
 ### Update Harvest
 
 ```python
-harvest update
+$ harvest update
 ```

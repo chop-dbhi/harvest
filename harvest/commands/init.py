@@ -4,10 +4,9 @@ import os
 import sys
 import stat
 import harvest
-from fabric.api import prefix
-from fabric.operations import local
+from functools import wraps
+from fabric.api import prefix, local, hide
 from fabric.colors import red, green
-from fabric.context_managers import hide
 from harvest.decorators import cli
 
 __doc__ = """\
@@ -25,10 +24,43 @@ def valid_name(name):
     return False
 
 
+def create_virtualenv(env_path):
+    if os.path.exists(env_path):
+        print(red("Error: Cannot create environment '{}'. A " \
+            "directory with the same already exists.".format(env_path)))
+        sys.exit()
+    print(green("Setting up a virtual environment '{}'...".format(env_path)))
+    local('virtualenv {}'.format(env_path))
+    os.chdir(env_path)
+
+
+def managepy_chmod():
+    mode = stat.S_IMODE(os.stat('bin/manage.py').st_mode)
+    executable = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+    os.chmod('bin/manage.py', mode | executable)
+
+
+def virtualenv(path):
+    "Wraps a function and prefixes the call with the virtualenv active."
+    activate = os.path.join(path, 'bin/activate')
+
+    def decorator(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            if path is not None:
+                with prefix('source {}'.format(activate)):
+                    func(*args, **kwargs)
+            else:
+                func(*args, **kwargs)
+        return inner
+    return decorator
+
+
 @cli(description=__doc__)
 def parser(options):
     project_name = options.project_name
     create_env = options.create_env
+    allow_input = options.allow_input
     verbose = options.verbose
 
     if not valid_name(project_name):
@@ -50,47 +82,64 @@ def parser(options):
         hidden_output.append('stdout')
 
     with hide(*hidden_output):
+        full_env_path = None
+
         # Check for virtualenv
         if create_env:
             env_path = '{}-env'.format(project_name)
-            if os.path.exists(env_path):
-                print(red("Error: Cannot create environment '{}'. A " \
-                    "directory with the same already exists.".format(env_path)))
-                sys.exit()
-            print(green("Setting up a virtual environment '{}'...".format(env_path)))
-            local('virtualenv {}'.format(env_path))
-        else:
-            env_path = '.'
+            full_env_path = os.path.abspath(env_path)
+            create_virtualenv(env_path)
 
-        # Change into virtualenv
-        os.chdir(env_path)
-
-        with prefix('source bin/activate'):
+        @virtualenv(full_env_path)
+        def install_django():
             print(green('Installing Django...'))
             local('pip install "django>=1.4,<1.5"')
 
+        @virtualenv(full_env_path)
+        def create_project(project_name):
             print(green("Creating new Harvest project '{}'...".format(project_name)))
             local('django-admin.py startproject {} {}'.format(STARTPROJECT_ARGS, project_name))
 
-        # Change into project directory
-        os.chdir(project_name)
-
-        # Ensure manage.py is executable..
-        mode = stat.S_IMODE(os.stat('bin/manage.py').st_mode)
-        executable = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-        os.chmod('bin/manage.py', mode | executable)
-
-        with prefix('source ../bin/activate'):
+        @virtualenv(full_env_path)
+        def install_deps():
             print(green('Downloading and installing dependencies...'))
             local('pip install -r requirements.txt')
 
+        @virtualenv(full_env_path)
+        def collect_static():
             print(green('Collecting static files...'))
             local('make collect')
 
-    print(green('Setting up a SQLite database...'))
-    with hide('running'):
-        with prefix('source ../bin/activate'):
-            local('./bin/manage.py syncdb --migrate')
+        @virtualenv(full_env_path)
+        def syncdb(allow_input):
+            print(green('Setting up a SQLite database...'))
+            cmd = './bin/manage.py syncdb --migrate'
+            if not allow_input:
+                cmd += ' --noinput'
+            local(cmd)
+
+        install_django()
+
+        create_project(project_name)
+
+        # Change into project directory for next set of commands..
+        os.chdir(project_name)
+
+        # Ensure manage.py is executable..
+        managepy_chmod()
+
+        install_deps()
+
+        collect_static()
+
+    hidden_output = ['running']
+    if not allow_input:
+        hidden_output.append('stdout')
+
+    # Refrain from blocking stdout due to the prompts..
+    with hide(*hidden_output):
+        syncdb(allow_input)
+
     print(green('''
 Complete! Copy and paste the following in your shell:
 
@@ -104,8 +153,10 @@ Then open up a web browser and go to: http://localhost:8000
 
 parser.add_argument('project_name', help='Name of the Harvest project. This '
     'must be a valid Python identifier.')
-parser.add_argument('--no-env', action='store_false', dest='create_env',
-    default=True, help='Prevents creating a virtualenv and sets up the ' \
-    'project in the current directory.')
-parser.add_argument('--verbose', action='store_true',
+parser.add_argument('-v', '--verbose', action='store_true',
     help='Print stdout output during installation process.')
+parser.add_argument('--no-env', action='store_false', dest='create_env',
+    help='Prevents creating a virtualenv and sets up the project in the '
+        'current directory.')
+parser.add_argument('--no-input', action='store_false', dest='allow_input',
+    help='Prevents interactive prompts during setup.')
