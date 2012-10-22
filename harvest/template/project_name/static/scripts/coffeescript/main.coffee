@@ -2,9 +2,4 @@
 # must be access via the namespaced path 'project/main'. This is to
 # ensure modules of the same name do not conflict Cilantro's modules.
 
-define [
-    'environ'
-    'jquery'
-    'underscore'
-    'backbone'
-], (environ, $, _, Backbone) ->
+define ->
