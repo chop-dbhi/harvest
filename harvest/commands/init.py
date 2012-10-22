@@ -7,7 +7,7 @@ import harvest
 from fabric.api import prefix
 from fabric.operations import local
 from fabric.colors import red, green
-from fabric.context_managers import hide, lcd
+from fabric.context_managers import hide
 from harvest.decorators import cli
 
 __doc__ = """\
@@ -62,31 +62,35 @@ def parser(options):
         else:
             env_path = '.'
 
-        with lcd(env_path):
-            with prefix('source bin/activate'):
-                print(green('Installing Django...'))
-                local('pip install "django>=1.4,<1.5"')
+        # Change into virtualenv
+        os.chdir(env_path)
 
-                print(green("Creating new Harvest project '{}'...".format(project_name)))
-                local('django-admin.py startproject {} {}'.format(STARTPROJECT_ARGS, project_name))
+        with prefix('source bin/activate'):
+            print(green('Installing Django...'))
+            local('pip install "django>=1.4,<1.5"')
 
-        with lcd(os.path.join(env_path, project_name)):
-            # Ensure manage.py is executable..
-            mode = stat.S_IMODE(os.stat('bin/manage.py').st_mode)
-            executable = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-            os.chmod('bin/manage.py', mode | executable)
-            with prefix('source ../bin/activate'):
-                print(green('Downloading and installing dependencies...'))
-                local('pip install -r requirements.txt')
+            print(green("Creating new Harvest project '{}'...".format(project_name)))
+            local('django-admin.py startproject {} {}'.format(STARTPROJECT_ARGS, project_name))
 
-                print(green('Collecting static files...'))
-                local('make collect')
+        # Change into project directory
+        os.chdir(project_name)
+
+        # Ensure manage.py is executable..
+        mode = stat.S_IMODE(os.stat('bin/manage.py').st_mode)
+        executable = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+        os.chmod('bin/manage.py', mode | executable)
+
+        with prefix('source ../bin/activate'):
+            print(green('Downloading and installing dependencies...'))
+            local('pip install -r requirements.txt')
+
+            print(green('Collecting static files...'))
+            local('make collect')
 
     print(green('Setting up a SQLite database...'))
     with hide('running'):
-        with lcd(os.path.join(env_path, project_name)):
-            with prefix('source ../bin/activate'):
-                local('./bin/manage.py syncdb --migrate')
+        with prefix('source ../bin/activate'):
+            local('./bin/manage.py syncdb --migrate')
     print(green('''
 Complete! Copy and paste the following in your shell:
 
