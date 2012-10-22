@@ -10,7 +10,7 @@ pip install harvest
 
 ### Start A New Project
 
-```python
+```bash
 $ harvest init [--verbose] [--no-env] [--no-input] project_name
 ```
 
@@ -42,6 +42,6 @@ sync. This is primarily useful for performing scripted builds.
 
 ### Update Harvest
 
-```python
+```bash
 $ harvest update
 ```
