@@ -144,15 +144,15 @@ def parser(options):
     with hide(*hidden_output):
         syncdb(allow_input)
 
-    print(green('''
-Complete! Copy and paste the following in your shell:
+    print(green('\nComplete! Copy and paste the following in your shell:\n'))
 
-cd {}/{}
-source ../bin/activate
-./bin/manage.py runserver
+    if create_env:
+        print(green('cd {}/{}\nsource ../bin/activate'.format(env_path, project_name)))
+    else:
+        print(green('cd {}'.format(project_name)))
 
-Then open up a web browser and go to: http://localhost:8000
-'''.format(env_path, project_name)))
+    print(green('./bin/manage.py runserver'))
+    print(green('\nOpen up a web browser and go to: http://localhost:8000\n'))
 
 
 parser.add_argument('project_name', help='Name of the Harvest project. This '
