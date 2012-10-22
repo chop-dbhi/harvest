@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 import harvest
-from harvest.commands import init
+from harvest.commands import init, update
 from collections import OrderedDict
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 # Top-level commands
 commands = OrderedDict([
     ('init', init),
+    ('update', update),
 ])
 
 # Top-level argument parser
