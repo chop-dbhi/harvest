@@ -69,6 +69,10 @@ def parser(options):
 
                 print(green("Creating new Harvest project '{}'...".format(project_name)))
                 local('django-admin.py startproject {} {}'.format(STARTPROJECT_ARGS, project_name))
+                # Ensure manage.py is executable..
+                mode = stat.S_IMODE(os.stat('bin/manage.py').st_mode)
+                executable = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+                os.chmod('bin/manage.py', mode | executable)
 
         with lcd(os.path.join(env_path, project_name)):
             with prefix('source ../bin/activate'):
@@ -82,10 +86,6 @@ def parser(options):
     with hide('running'):
         with lcd(os.path.join(env_path, project_name)):
             with prefix('source ../bin/activate'):
-                # Ensure manage.py is executable..
-                mode = stat.S_IMODE(os.stat('bin/manage.py').st_mode)
-                os.chmod('bin/manage.py', mode | stat.S_IXUSR \
-                    | stat.S_IXGRP | stat.S_IXOTH)
                 local('./bin/manage.py syncdb --migrate')
     print(green('''
 Complete! Copy and paste the following in your shell:
