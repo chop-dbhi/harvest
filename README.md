@@ -2,8 +2,8 @@
 
 ## Install
 
-```python
-pip install harvest
+```bash
+$ pip install harvest
 ```
 
 ## Harvest CLI
