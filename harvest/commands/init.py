@@ -2,6 +2,7 @@ from __future__ import print_function
 import re
 import os
 import sys
+import stat
 import harvest
 from fabric.api import prefix
 from fabric.operations import local
@@ -81,6 +82,10 @@ def parser(options):
     with hide('running'):
         with lcd(os.path.join(env_path, project_name)):
             with prefix('source ../bin/activate'):
+                # Ensure manage.py is executable..
+                mode = stat.S_IMODE(os.stat('bin/manage.py').st_mode)
+                os.chmod('bin/manage.py', mode | stat.S_IXUSR \
+                    | stat.S_IXGRP | stat.S_IXOTH)
                 local('./bin/manage.py syncdb --migrate')
     print(green('''
 Complete! Copy and paste the following in your shell:
