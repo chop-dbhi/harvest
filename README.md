@@ -23,3 +23,10 @@ This command performs the following steps:
 - Sync and migrate a SQLite database, this requires you to answer a couple
 prompts
 - Collect the static files (mainly due to Cilantro)
+
+
+### Update Harvest
+
+```python
+harvest update
+```
