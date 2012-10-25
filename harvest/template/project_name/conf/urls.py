@@ -12,7 +12,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
 
-    url(r'', include('cilantro.urls')),
+    url(r'^', include('cilantro.urls')),
+    url(r'^workspace/', 'cilantro.views.app', name='cilantro'),
 
     url(r'^api/', include('serrano.urls')),
 
