@@ -10,11 +10,17 @@ add_to_builtins('avocado.templatetags.avocado_tags')
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    # Home/Splash/Index page
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
 
-    url(r'^', include('cilantro.urls')),
+    # Mount point for the Cilantro app. Since this is a single-page web app
+    # all URLs will be routed relative to this endpoint.
     url(r'^workspace/', 'cilantro.views.app', name='cilantro'),
 
+    # Other Cilantro endpoints such as the preferences/session API
+    url(r'^', include('cilantro.urls')),
+
+    # Serrano API endpoints
     url(r'^api/', include('serrano.urls')),
 
     # Administrative components
@@ -23,10 +29,10 @@ urlpatterns = patterns('',
 
 # In production, these two locations must be served up statically
 urlpatterns += patterns('django.views.static',
-    url(r'^%s(?P<path>.*)$' % re.escape(settings.MEDIA_URL.lstrip('/')), 'serve', {
+    url(r'^{}(?P<path>.*)$'.format(re.escape(settings.MEDIA_URL.lstrip('/'))), 'serve', {
         'document_root': settings.MEDIA_ROOT
     }),
-    url(r'^%s(?P<path>.*)$' % re.escape(settings.STATIC_URL.lstrip('/')), 'serve', {
+    url(r'^{}(?P<path>.*)$'.format(re.escape(settings.STATIC_URL.lstrip('/'))), 'serve', {
         'document_root': settings.STATIC_ROOT
     }),
 )
