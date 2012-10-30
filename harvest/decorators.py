@@ -1,4 +1,7 @@
+import os
+from functools import wraps
 from argparse import ArgumentParser
+from fabric.context_managers import prefix
 
 
 def cached_property(func):
@@ -28,4 +31,23 @@ def cli(*args, **kwargs):
                 func(*args, **kwargs)
 
         return Parser(*args, **kwargs)
+    return decorator
+
+
+def virtualenv(path):
+    "Wraps a function and prefixes the call with the virtualenv active."
+    if path is None:
+        activate = None
+    else:
+        activate = os.path.join(path, 'bin/activate')
+
+    def decorator(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            if path is not None:
+                with prefix('source {}'.format(activate)):
+                    func(*args, **kwargs)
+            else:
+                func(*args, **kwargs)
+        return inner
     return decorator

@@ -2,12 +2,11 @@ from __future__ import print_function
 import re
 import os
 import sys
-import stat
 import harvest
-from functools import wraps
-from fabric.api import prefix, local, hide
+from fabric.api import local, hide
 from fabric.colors import red, green
-from harvest.decorators import cli
+from harvest.decorators import cli, virtualenv
+from harvest.utils import create_virtualenv, managepy_chmod
 
 __doc__ = """\
 Creates and sets up a new Harvest project.
@@ -22,41 +21,6 @@ def valid_name(name):
     if re.match(r'^[a-z_]\w*$', name, re.I) is not None:
         return True
     return False
-
-
-def create_virtualenv(env_path):
-    if os.path.exists(env_path):
-        print(red("Error: Cannot create environment '{}'. A " \
-            "directory with the same already exists.".format(env_path)))
-        sys.exit()
-    print(green("Setting up a virtual environment '{}'...".format(env_path)))
-    local('virtualenv {}'.format(env_path))
-    os.chdir(env_path)
-
-
-def managepy_chmod():
-    mode = stat.S_IMODE(os.stat('bin/manage.py').st_mode)
-    executable = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-    os.chmod('bin/manage.py', mode | executable)
-
-
-def virtualenv(path):
-    "Wraps a function and prefixes the call with the virtualenv active."
-    if path is None:
-        activate = None
-    else:
-        activate = os.path.join(path, 'bin/activate')
-
-    def decorator(func):
-        @wraps(func)
-        def inner(*args, **kwargs):
-            if path is not None:
-                with prefix('source {}'.format(activate)):
-                    func(*args, **kwargs)
-            else:
-                func(*args, **kwargs)
-        return inner
-    return decorator
 
 
 @cli(description=__doc__)
@@ -80,9 +44,12 @@ def parser(options):
     except ImportError:
         pass
 
-    hidden_output = ['running']
-    if not verbose:
+    hidden_output = []
+
+    if verbose < 1:
         hidden_output.append('stdout')
+    if verbose < 2:
+        hidden_output.append('running')
 
     with hide(*hidden_output):
         env_path = '.'
@@ -157,7 +124,7 @@ def parser(options):
 
 parser.add_argument('project_name', help='Name of the Harvest project. This '
     'must be a valid Python identifier.')
-parser.add_argument('-v', '--verbose', action='store_true',
+parser.add_argument('-v', '--verbose', action='count',
     help='Print stdout output during installation process.')
 parser.add_argument('--no-env', action='store_false', dest='create_env',
     help='Prevents creating a virtualenv and sets up the project in the '
