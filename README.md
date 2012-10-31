@@ -24,7 +24,8 @@ number, such as `myproject`, `my_project`, and `project1`, but not `1project`,
 
 **Options**
 
-`--verbose` - Pass to get all output printed to stdout.
+`--verbose` - Pass to get all output printed to stdout. Multiple flags can be
+passed to increase the verbosity, e.g. `-vv`.
 
 `--no-env` - Pass to prevent creating a virtualenv. If set, it is assumed the
 virtualenv is active prior to running this command to ensure dependencies are
@@ -135,3 +136,24 @@ This command updates itself to the lastest stable version from PyPi.
 ```bash
 $ harvest update
 ```
+
+### Install Demo
+
+This command installs one of the Harvest demos.
+
+```bash
+$ harvest init-demo [--verbose] [--no-env] [--no-input] demo_name
+```
+
+**Arguments**
+
+`demo_name` - The name of an available demo which is currently only `openmrs`.
+
+**Options**
+
+`--verbose` - Pass to get all output printed to stdout. Multiple flags can be
+passed to increase the verbosity, e.g. `-vv`.
+
+`--no-env` - Pass to prevent creating a virtualenv. If set, it is assumed the
+virtualenv is active prior to running this command to ensure dependencies are
+installed in the correct site-packages directory.
