@@ -17,6 +17,8 @@ parser = ArgumentParser(description=harvest.__doc__,
     version='Harvest v{}'.format(harvest.__version__),
     formatter_class=ArgumentDefaultsHelpFormatter)
 
+parser.add_argument('--debug', action='store_true', help='Debug mode')
+
 # Add sub-parsers for each command
 subparsers = parser.add_subparsers(dest='command')
 
@@ -36,5 +38,10 @@ for key in commands:
 # Parse command-line arguments
 options = parser.parse_args()
 
+if options.debug:
+    handler = commands[options.command].parser.handle_raw
+else:
+    handler = commands[options.command].parser.handle
+
 # Get the module and call the main function
-commands[options.command].parser.handle(options)
+handler(options)
