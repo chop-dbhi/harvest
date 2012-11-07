@@ -13,7 +13,7 @@ Creates and sets up a new Harvest project.
 """
 
 HARVEST_TEMPLATE_PATH = os.path.join(os.path.abspath(os.path.dirname(harvest.__file__)), 'template')
-STARTPROJECT_ARGS = '--template {} -e py,ini,gitignore,in,conf,md,sample ' \
+STARTPROJECT_ARGS = '--template {0} -e py,ini,gitignore,in,conf,md,sample ' \
     '-n Makefile'.format(HARVEST_TEMPLATE_PATH)
 
 
@@ -31,14 +31,14 @@ def parser(options):
     verbose = options.verbose
 
     if not valid_name(project_name):
-        print(red("Error: The project name '{}' must be a valid Python "
+        print(red("Error: The project name '{0}' must be a valid Python "
             "identifier.".format(project_name)))
         sys.exit()
 
     # Ensure the name does not conflict with an existing Python module
     try:
         __import__(project_name)
-        print(red("Error: The project name '{}' conflicts with an existing "
+        print(red("Error: The project name '{0}' conflicts with an existing "
             "Python module. Please choose another name.".format(project_name)))
         sys.exit()
     except ImportError:
@@ -57,7 +57,7 @@ def parser(options):
 
         # Check for virtualenv
         if create_env:
-            env_path = '{}-env'.format(project_name)
+            env_path = '{0}-env'.format(project_name)
             full_env_path = os.path.abspath(env_path)
             create_virtualenv(env_path)
 
@@ -68,8 +68,8 @@ def parser(options):
 
         @virtualenv(full_env_path)
         def create_project(project_name):
-            print(green("Creating new Harvest project '{}'...".format(project_name)))
-            local('django-admin.py startproject {} {}'.format(STARTPROJECT_ARGS, project_name))
+            print(green("Creating new Harvest project '{0}'...".format(project_name)))
+            local('django-admin.py startproject {0} {1}'.format(STARTPROJECT_ARGS, project_name))
 
         @virtualenv(full_env_path)
         def install_deps():
@@ -114,9 +114,9 @@ def parser(options):
     print(green('\nComplete! Copy and paste the following in your shell:\n'))
 
     if create_env:
-        print(green('cd {}/{}\nsource ../bin/activate'.format(env_path, project_name)))
+        print(green('cd {0}/{1}\nsource ../bin/activate'.format(env_path, project_name)))
     else:
-        print(green('cd {}'.format(project_name)))
+        print(green('cd {0}'.format(project_name)))
 
     print(green('./bin/manage.py runserver'))
     print(green('\nOpen up a web browser and go to: http://localhost:8000\n'))

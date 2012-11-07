@@ -21,14 +21,14 @@ DEMOS = {
 
 def download_demo(demo_name):
     "Downloads and extracts the demo zip file"
-    print(green("Downloading and unpacking '{}' demo...".format(demo_name)))
+    print(green("Downloading and unpacking '{0}' demo...".format(demo_name)))
     response = urllib2.urlopen(DEMOS[demo_name]['url'])
 
     # Extract real name of zipfile
     content_disposition = response.headers.getheader('content-disposition')
     real_name = os.path.splitext(content_disposition.split('; ')[1].split('=')[1])[0]
 
-    fname = '{}.zip'.format(demo_name)
+    fname = '{0}.zip'.format(demo_name)
 
     # Download zipfile
     with open(fname, 'wb') as tmpfile:
@@ -67,7 +67,7 @@ def parser(options):
 
         # Check for virtualenv
         if create_env:
-            env_path = '{}-env'.format(demo_name)
+            env_path = '{0}-env'.format(demo_name)
             full_env_path = os.path.abspath(env_path)
             create_virtualenv(env_path)
 
@@ -105,9 +105,9 @@ def parser(options):
     print(green('\nComplete! Copy and paste the following in your shell:\n'))
 
     if create_env:
-        print(green('cd {}/{}\nsource ../bin/activate'.format(env_path, demo_name)))
+        print(green('cd {0}/{1}\nsource ../bin/activate'.format(env_path, demo_name)))
     else:
-        print(green('cd {}'.format(demo_name)))
+        print(green('cd {0}'.format(demo_name)))
 
     print(green('./bin/manage.py runserver'))
     print(green('\nOpen up a web browser and go to: http://localhost:8000\n'))

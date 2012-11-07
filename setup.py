@@ -1,4 +1,14 @@
+import sys
 from setuptools import setup, find_packages
+
+install_requires = [
+    'fabric>=1.4.3',
+    'virtualenv>=1.8.2',
+]
+
+if sys.version < (2, 7):
+    install_requires.append('argparse>=1.2.1')
+    install_requires.append('ordereddict>=1.1')
 
 
 kwargs = {
@@ -7,10 +17,7 @@ kwargs = {
     'include_package_data': True,
 
     # Dependencies
-    'install_requires': [
-        'fabric>=1.4.3',
-        'virtualenv>=1.8.2',
-    ],
+    'install_requires': install_requires,
 
     'test_suite': 'tests',
 
@@ -28,6 +35,7 @@ kwargs = {
     'classifiers': [
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: BSD License',
+        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Framework :: Django',
         'Topic :: Internet :: WWW/HTTP',

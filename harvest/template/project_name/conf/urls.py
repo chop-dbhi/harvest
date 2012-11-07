@@ -29,10 +29,10 @@ urlpatterns = patterns('',
 
 # In production, these two locations must be served up statically
 urlpatterns += patterns('django.views.static',
-    url(r'^{}(?P<path>.*)$'.format(re.escape(settings.MEDIA_URL.lstrip('/'))), 'serve', {
+    url(r'^{0}(?P<path>.*)$'.format(re.escape(settings.MEDIA_URL.lstrip('/'))), 'serve', {
         'document_root': settings.MEDIA_ROOT
     }),
-    url(r'^{}(?P<path>.*)$'.format(re.escape(settings.STATIC_URL.lstrip('/'))), 'serve', {
+    url(r'^{0}(?P<path>.*)$'.format(re.escape(settings.STATIC_URL.lstrip('/'))), 'serve', {
         'document_root': settings.STATIC_ROOT
     }),
 )

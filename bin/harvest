@@ -2,7 +2,10 @@
 
 import harvest
 from harvest.commands import init, init_demo, update
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 # Top-level commands
@@ -14,7 +17,7 @@ commands = OrderedDict([
 
 # Top-level argument parser
 parser = ArgumentParser(description=harvest.__doc__,
-    version='Harvest v{}'.format(harvest.__version__),
+    version='Harvest v{0}'.format(harvest.__version__),
     formatter_class=ArgumentDefaultsHelpFormatter)
 
 parser.add_argument('--debug', action='store_true', help='Debug mode')

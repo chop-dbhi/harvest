@@ -5,7 +5,7 @@ from fabric.context_managers import prefix
 
 
 def cached_property(func):
-    cach_attr = '_{}'.format(func.__name__)
+    cach_attr = '_{0}'.format(func.__name__)
 
     @property
     def wrap(self):
@@ -45,7 +45,7 @@ def virtualenv(path):
         @wraps(func)
         def inner(*args, **kwargs):
             if path is not None:
-                with prefix('source {}'.format(activate)):
+                with prefix('source {0}'.format(activate)):
                     func(*args, **kwargs)
             else:
                 func(*args, **kwargs)

@@ -14,4 +14,4 @@ def parser(options):
     with hide('running'):
         bindir = os.path.dirname(local('which harvest', capture=True))
         pip = os.path.join(bindir, 'pip')
-        local('{} install -U harvest'.format(pip))
+        local('{0} install -U harvest'.format(pip))
