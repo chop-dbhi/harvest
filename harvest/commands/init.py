@@ -51,43 +51,46 @@ def parser(options):
     if verbose < 2:
         hidden_output.append('running')
 
+    print(green("Setting up project '{0}'...".format(project_name)))
+
+    env_path = '.'
+    full_env_path = None
+
+    # Check for virtualenv
+    if create_env:
+        env_path = '{0}-env'.format(project_name)
+        full_env_path = os.path.abspath(env_path)
+
+    @virtualenv(full_env_path)
+    def install_django():
+        print(green('- Installing Django'))
+        local('pip install "django>=1.4,<1.5"')
+
+    @virtualenv(full_env_path)
+    def create_project(project_name):
+        print(green("- Creating new Harvest project '{0}'".format(project_name)))
+        local('django-admin.py startproject {0} {1}'.format(STARTPROJECT_ARGS, project_name))
+
+    @virtualenv(full_env_path)
+    def install_deps():
+        print(green('- Downloading and installing dependencies'))
+        local('pip install -r requirements.txt')
+
+    @virtualenv(full_env_path)
+    def collect_static():
+        print(green('- Collecting static files'))
+        local('make collect')
+
+    @virtualenv(full_env_path)
+    def syncdb(allow_input):
+        print(green('- Setting up a SQLite database'))
+        cmd = './bin/manage.py syncdb --migrate'
+        if not allow_input:
+            cmd += ' --noinput'
+        local(cmd)
+
     with hide(*hidden_output):
-        env_path = '.'
-        full_env_path = None
-
-        # Check for virtualenv
-        if create_env:
-            env_path = '{0}-env'.format(project_name)
-            full_env_path = os.path.abspath(env_path)
-            create_virtualenv(env_path)
-
-        @virtualenv(full_env_path)
-        def install_django():
-            print(green('Installing Django...'))
-            local('pip install "django>=1.4,<1.5"')
-
-        @virtualenv(full_env_path)
-        def create_project(project_name):
-            print(green("Creating new Harvest project '{0}'...".format(project_name)))
-            local('django-admin.py startproject {0} {1}'.format(STARTPROJECT_ARGS, project_name))
-
-        @virtualenv(full_env_path)
-        def install_deps():
-            print(green('Downloading and installing dependencies...'))
-            local('pip install -r requirements.txt')
-
-        @virtualenv(full_env_path)
-        def collect_static():
-            print(green('Collecting static files...'))
-            local('make collect')
-
-        @virtualenv(full_env_path)
-        def syncdb(allow_input):
-            print(green('Setting up a SQLite database...'))
-            cmd = './bin/manage.py syncdb --migrate'
-            if not allow_input:
-                cmd += ' --noinput'
-            local(cmd)
+        create_virtualenv(env_path)
 
         install_django()
 
@@ -99,8 +102,10 @@ def parser(options):
         # Ensure manage.py is executable..
         managepy_chmod()
 
+    with hide('running'):
         install_deps()
 
+    with hide(*hidden_output):
         collect_static()
 
     hidden_output = ['running']

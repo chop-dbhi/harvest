@@ -1,5 +1,6 @@
 from __future__ import print_function
 import os
+import sys
 import urllib2
 from zipfile import ZipFile
 from fabric.api import local, hide
@@ -21,7 +22,7 @@ DEMOS = {
 
 def download_demo(demo_name):
     "Downloads and extracts the demo zip file"
-    print(green("Downloading and unpacking '{0}' demo...".format(demo_name)))
+    print(green('- Downloading'), end='')
     response = urllib2.urlopen(DEMOS[demo_name]['url'])
 
     # Extract real name of zipfile
@@ -33,12 +34,16 @@ def download_demo(demo_name):
     # Download zipfile
     with open(fname, 'wb') as tmpfile:
         while True:
-            packet = response.read()
+            packet = response.read(2 ** 16)
             if not packet:
+                print(green('done'))
                 break
             tmpfile.write(packet)
+            sys.stdout.write(green('.'))
+            sys.stdout.flush()
         response.close()
 
+    print(green('- Extracting'))
     # Extract zipfile
     zipfile = ZipFile(fname)
     zipfile.extractall()
@@ -61,33 +66,28 @@ def parser(options):
     if verbose < 2:
         hidden_output.append('running')
 
+    print(green("Setting up the '{0}' demo...".format(demo_name)))
+
+    env_path = '.'
+    full_env_path = None
+
+    # Check for virtualenv
+    if create_env:
+        env_path = '{0}-env'.format(demo_name)
+        full_env_path = os.path.abspath(env_path)
+
+    @virtualenv(full_env_path)
+    def install_deps():
+        print(green('- Downloading and installing dependencies'))
+        local('pip install -r requirements.txt')
+
+    @virtualenv(full_env_path)
+    def collect_static():
+        print(green('- Collecting static files'))
+        local('make collect')
+
     with hide(*hidden_output):
-        env_path = '.'
-        full_env_path = None
-
-        # Check for virtualenv
-        if create_env:
-            env_path = '{0}-env'.format(demo_name)
-            full_env_path = os.path.abspath(env_path)
-            create_virtualenv(env_path)
-
-        @virtualenv(full_env_path)
-        def install_deps():
-            print(green('Downloading and installing dependencies...'))
-            local('pip install -r requirements.txt')
-
-        @virtualenv(full_env_path)
-        def collect_static():
-            print(green('Collecting static files...'))
-            local('make collect')
-
-        @virtualenv(full_env_path)
-        def syncdb(allow_input):
-            print(green('Setting up a SQLite database...'))
-            cmd = './bin/manage.py syncdb --migrate'
-            if not allow_input:
-                cmd += ' --noinput'
-            local(cmd)
+        create_virtualenv(env_path)
 
         # Download the demo
         download_demo(demo_name)
@@ -98,8 +98,10 @@ def parser(options):
         # Ensure manage.py is executable..
         managepy_chmod()
 
+    with hide('running'):
         install_deps()
 
+    with hide(*hidden_output):
         collect_static()
 
     print(green('\nComplete! Copy and paste the following in your shell:\n'))

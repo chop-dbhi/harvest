@@ -6,7 +6,7 @@ install_requires = [
     'virtualenv>=1.8.2',
 ]
 
-if sys.version < (2, 7):
+if sys.version_info < (2, 7):
     install_requires.append('argparse>=1.2.1')
     install_requires.append('ordereddict>=1.1')
 

@@ -10,7 +10,7 @@ def create_virtualenv(env_path):
         print(red("Error: Cannot create environment '{0}'. A " \
             "directory with the same already exists.".format(env_path)))
         sys.exit()
-    print(green("Setting up a virtual environment '{0}'...".format(env_path)))
+    print(green("- Setting up a virtual environment '{0}'".format(env_path)))
     local('virtualenv {0}'.format(env_path))
     os.chdir(env_path)
 
