@@ -142,7 +142,7 @@ $ harvest update
 This command installs one of the Harvest demos.
 
 ```bash
-$ harvest init-demo [--verbose] [--no-env] [--no-input] demo_name
+$ harvest init-demo [--verbose] [--no-env] demo_name
 ```
 
 **Arguments**
