@@ -90,7 +90,8 @@ def parser(options):
         local(cmd)
 
     with hide(*hidden_output):
-        create_virtualenv(env_path)
+        if create_env:
+            create_virtualenv(env_path)
 
         install_django()
 

@@ -87,7 +87,8 @@ def parser(options):
         local('make collect')
 
     with hide(*hidden_output):
-        create_virtualenv(env_path)
+        if create_env:
+            create_virtualenv(env_path)
 
         # Download the demo
         download_demo(demo_name)
