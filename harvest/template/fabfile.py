@@ -93,6 +93,7 @@ def get_hosts_settings():
 
 hosts = get_hosts_settings()
 
+
 def host_context(func):
     "Sets the context of the setting to the current host"
     @wraps(func)
@@ -107,7 +108,11 @@ def merge_commit(commit):
     "Fetches the latest code and merges up the specified commit."
     with cd(env.path):
         run('git fetch')
+        if '@' in commit:
+            branch, commit = commit.split('@')
+            run('git checkout {0}'.format(branch))
         run('git merge {0}'.format(commit))
+        run('find . -type f | grep .pyc | xargs rm -f')
 
 
 @host_context
@@ -142,15 +147,13 @@ def reload_supervisor():
     with cd(env.path):
         run('ln -sf $PWD/server/supervisor/{host}.ini '
             '{supervisor_conf_dir}/{{ project_name }}-{host}.ini'.format(**env))
-
     run('supervisorctl update')
-    run('supervisorctl reread')
 
 
 @host_context
 def reload_wsgi():
     "Gets the PID for the wsgi process and sends a HUP signal."
-    pid = run('supervisorctl pid {{ project_name }}')
+    pid = run('supervisorctl pid {{ project_name }}-{0}'.format(env.host))
     run('kill -HUP {0}'.format(pid))
 
 

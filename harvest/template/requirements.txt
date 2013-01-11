@@ -5,15 +5,15 @@
 #     pip install -U -r requirements.txt
 
 # Core requirements
-django>=1.4,<1.5
-markdown
-south
-uWSGI
+Django>=1.4.3,<1.5
+Markdown
+uWSGI==1.4.4
+Fabric==1.4.4
 
-avocado>=2.0.11,<2.1
-serrano>=2.0.10,<2.1
+avocado>=2.0.15,<2.1
+serrano>=2.0.11,<2.1
 cilantro>=2.0.7,<2.1
-modeltree>=1.1.2,<1.2
+modeltree>=1.1.3,<1.2
 
 # Database Drivers, the Python stdlib has support for SQLite
 # psycopg2
