@@ -19,6 +19,7 @@ INSTALLED_APPS = (
     'cilantro',
     'serrano',
     'avocado',
+    'modeltree',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -274,3 +275,14 @@ IGNORABLE_404_PATHS = (
 
 # The primary key of the ``Site`` object for the Sites Framework
 SITE_ID = 1
+
+
+#
+# ModelTrees Configuration
+#
+
+# MODELTREES = {
+#     'default': {
+#         'model': '',
+#     }
+# }
