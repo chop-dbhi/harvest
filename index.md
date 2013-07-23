@@ -1,18 +1,32 @@
 ---
 layout: default
-title: "Jekyll Docs Template"
+title: "Harvest"
 ---
 
-### Get Started
+<div class=lead>Designed by and for biomedical researchers, <a href="http://harvest.research.chop.edu">The Harvest Stack</a> is an open source toolkit for building web applications for integrating, discovering, and reporting data.</div>
 
-Start by [creating a new post](http://jekyllrb.com/docs/posts/) one of the categories listed in `_config.yml`. It will appear in the navigation on the left once recompiled. Or use the supplied script to make creating pages easier:
+_This is the documentation and reference material for the Python-based command line tools for [The Harvest Stack](http://harvest.research.chop.edu)._
+
+### The _Stack_
+
+- [Avocado](http://avocado.harvest.io)
+- [Serrano](http://serrano.harvest.io)
+- [Cilantro](http://cilantro.harvest.io)
+- [ModelTree](http://modeltree.harvest.io)
+
+
+### Quickstart
+
+
+
+#### Install
 
 ```bash
-ruby bin/jekyll-page "Some Page Title" ref
+$ pip install harvest
 ```
 
-#### Don't Forget
+#### New Project
 
-- Add your own content to this page (i.e. `index.md`) and change the `title`
-- Change `title` and `subtitle` defined in `config.yml` for your site
-- Set the `baseurl` in `_config.yml` for your repo if deploying to GitHub pages
+```bash
+$ harvest init myproject
+```
