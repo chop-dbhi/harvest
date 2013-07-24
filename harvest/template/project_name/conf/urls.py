@@ -10,17 +10,14 @@ add_to_builtins('avocado.templatetags.avocado_tags')
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Home/Splash/Index page
-    url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
+    # Landing Page
+    url(r'^$', '{{ project_name }}.views.landing', name='landing'),
 
-    # Mount point for the Cilantro app. Since this is a single-page web app
-    # all URLs will be routed relative to this endpoint.
-    url(r'^workspace/', 'cilantro.views.app', name='cilantro'),
+    # Cilantro Pages
+    url(r'^query/', TemplateView.as_view(template_name='index.html'), name='query'),
+    url(r'^results/', TemplateView.as_view(template_name='index.html'), name='results'),
 
-    # Other Cilantro endpoints such as the preferences/session API
-    url(r'^', include('cilantro.urls')),
-
-    # Serrano API endpoints
+    # Serrano-compatible Endpoint
     url(r'^api/', include('serrano.urls')),
 
     # Administrative components

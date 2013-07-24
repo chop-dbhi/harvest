@@ -8,6 +8,10 @@ $ pip install harvest
 
 ## Harvest CLI
 
+### Dependencies
+
+This version of Harvest requires Python 2.6 or 2.7.
+
 ### Start A New Project
 
 ```bash

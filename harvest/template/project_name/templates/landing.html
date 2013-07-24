@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block content %}
+    <div class=container-fluid>
+        <div class=row-fluid>
+            <div class=span12>
+                <div class=hero-unit>
+                    <h1 class=heading>Welcome to Harvest</h1>
+                    <h2>Data discovery for humans.</h2>
+                    <p>Designed by and for biomedical researchers, The Harvest
+                    Stack is an open source toolkit for building web
+                    applications for integrating, discovering, and reporting
+                    data. <a href=http://harvest.research.chop.edu target=_blank>Learn more</a>.</p>
+                    <p><a href="{% url "query" %}">Get Started</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

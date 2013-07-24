@@ -2,7 +2,7 @@ import sys
 from setuptools import setup, find_packages
 
 install_requires = [
-    'fabric==1.4.4',
+    'Fabric>=1.6,<1.7',
     'virtualenv>=1.8.2',
 ]
 

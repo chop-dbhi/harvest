@@ -1,21 +1,19 @@
-# This file collects all required third-party applications that are needed
-# to run this project. Later you can install all these apps in a row
-# using pip. Example::
-#
-#     pip install -U -r requirements.txt
-
-# Core requirements
-Django>=1.4.3,<1.5
-Markdown
-uWSGI==1.4.4
-Fabric==1.4.4
-
-avocado>=2.0.18,<2.1
-serrano>=2.0.13,<2.1
-cilantro>=2.0.7,<2.1
-modeltree>=1.1.3,<1.2
-
 # Database Drivers, the Python stdlib has support for SQLite
 # psycopg2
 # cx_oracle
 # mysql-python
+
+# WSGI server
+# uWSGI
+
+# Deployment with fabfile.py
+# Fabric
+
+# Harvest components
+serrano==2.0.18
+
+# Harvest extensions
+# django-haystack==1.2.7
+# Whoosh==2.4.0
+# django-guardian
+# openpyxl

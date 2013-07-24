@@ -64,7 +64,7 @@ def parser(options):
     @virtualenv(full_env_path)
     def install_django():
         print(green('- Installing Django'))
-        local('pip install "django>=1.4,<1.5"')
+        local('pip install "django>=1.5,<1.6"')
 
     @virtualenv(full_env_path)
     def create_project(project_name):

@@ -16,7 +16,6 @@ INSTALLED_APPS = (
     '{{ project_name }}',
 
     'south',
-    'cilantro',
     'serrano',
     'avocado',
     'modeltree',
@@ -140,7 +139,6 @@ TEMPLATE_DIRS = ()
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.request',
     '{{ project_name }}.context_processors.static',
-    'cilantro.context_processors.cilantro',
 )
 
 
@@ -209,10 +207,16 @@ SEND_BROKEN_LINK_EMAILS = False
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        }
+    },
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
         }
     },
     'loggers': {

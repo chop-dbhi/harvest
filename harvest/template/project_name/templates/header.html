@@ -1,0 +1,12 @@
+{% load url from future %}
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class=navbar-inner>
+        <div class=container-fluid>
+            <a href="{% url "landing" %}"><span class=brand>Harvest</span></a>
+        	<ul class="nav">
+                <li><a href="{% url "query" %}"><i class="icon-search"></i> Discover</a></li>
+                <li><a href="{% url "results" %}"><i class="icon-table"></i> Results</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
