@@ -17,19 +17,23 @@ commands = OrderedDict([
 
 # Top-level argument parser
 parser = ArgumentParser(description=harvest.__doc__,
+    usage='%(prog)s [options] <command> ...',
     version='Harvest v{0}'.format(harvest.__version__),
+    epilog="See '%(prog)s <command> --help' for more information on a specific command.",
     formatter_class=ArgumentDefaultsHelpFormatter)
 
 parser.add_argument('--debug', action='store_true', help='Debug mode')
 
 # Add sub-parsers for each command
-subparsers = parser.add_subparsers(dest='command')
+subparsers = parser.add_subparsers(title='available commands',
+    dest='command', metavar='')
 
 # Populate subparsers
 for key in commands:
     module = commands[key]
     # Add it by name
     subparser = subparsers.add_parser(key, add_help=False,
+        help=module.__doc__,
         formatter_class=ArgumentDefaultsHelpFormatter)
     # Update subparser with properties of module parser. Keep
     # track of the generated `prog` since it is relative to
