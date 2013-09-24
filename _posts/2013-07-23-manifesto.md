@@ -2,6 +2,7 @@
 layout: page
 title: "Manifesto"
 category: ref
+permalink: /manifesto/
 date: 2013-07-23 16:37:59
 ---
 
