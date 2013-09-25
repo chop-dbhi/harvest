@@ -1,5 +1,7 @@
 # Harvest
 
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cbmi/harvest/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 ## Install
 
 ```bash
