@@ -10,7 +10,7 @@
 # Fabric
 
 # Harvest components
-serrano==2.0.18
+serrano==2.1.0
 
 # Harvest extensions
 # django-haystack==1.2.7
