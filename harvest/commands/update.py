@@ -8,7 +8,6 @@ __doc__ = """\
 Updates this Harvest package.
 """
 
-
 @cli(description=__doc__)
 def parser(options):
     with hide('running'):

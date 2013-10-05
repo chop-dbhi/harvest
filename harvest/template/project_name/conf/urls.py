@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^$', '{{ project_name }}.views.landing', name='landing'),
 
     # Cilantro Pages
+    url(r'^workspace/', TemplateView.as_view(template_name='index.html'), name='workspace'),
     url(r'^query/', TemplateView.as_view(template_name='index.html'), name='query'),
     url(r'^results/', TemplateView.as_view(template_name='index.html'), name='results'),
 

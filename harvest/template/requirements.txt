@@ -1,3 +1,4 @@
+Django>=1.5,<1.6
 # Database Drivers, the Python stdlib has support for SQLite
 # psycopg2
 # cx_oracle

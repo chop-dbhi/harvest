@@ -174,14 +174,12 @@ ROOT_URLCONF = '{{ project_name }}.conf.urls'
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
-    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'serrano.middleware.SessionMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 
