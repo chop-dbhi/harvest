@@ -16,7 +16,13 @@
     optimizeCss: 'none',
 
     paths: {
-        'cilantro': 'empty:'
+        'cilantro': 'empty:',
+        'jquery': 'empty:',
+        'underscore': 'empty:',
+        'backbone': 'empty:',
+        'mariontette': 'empty:',
+        'highcharts': 'empty:',
+        'bootstrap': 'empty:'
     },
 
     name: 'main'
