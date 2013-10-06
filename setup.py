@@ -2,8 +2,8 @@ import sys
 from setuptools import setup, find_packages
 
 install_requires = [
-    'Fabric>=1.6,<1.7',
-    'virtualenv>=1.8.2',
+    'Fabric>=1.8',
+    'virtualenv>=1.10.1',
 ]
 
 if sys.version_info < (2, 7):
@@ -19,7 +19,7 @@ kwargs = {
     # Dependencies
     'install_requires': install_requires,
 
-    'test_suite': 'tests',
+    'test_suite': 'test_suite',
 
     'scripts': ['bin/harvest'],
 
