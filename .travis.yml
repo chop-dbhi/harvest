@@ -11,7 +11,7 @@ install:
     - pip install -q coveralls --use-mirrors
 
 script:
-    - PYTHONPATH=. coverage run test_suite.py
+    - PYTHONPATH=. coverage run setup.py test
 
 after_success:
     - coveralls
