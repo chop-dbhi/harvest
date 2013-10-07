@@ -2,9 +2,13 @@ from __future__ import print_function
 import re
 import os
 import sys
+import zipfile
 import harvest
-from fabric.api import local, hide
+from ConfigParser import ConfigParser
+from fabric.api import local, hide, prompt
+from fabric.context_managers import lcd
 from fabric.colors import red, green
+from harvest import config
 from harvest.decorators import cli, virtualenv
 from harvest.utils import create_virtualenv, managepy_chmod
 
@@ -12,10 +16,16 @@ __doc__ = """\
 Creates and sets up a new Harvest project.
 """
 
-HARVEST_TEMPLATE_PATH = os.path.join(os.path.abspath(os.path.dirname(harvest.__file__)), 'template')
-STARTPROJECT_ARGS = '--template {0} -e py,ini,gitignore,in,conf,md,sample ' \
-    '-n Makefile'.format(HARVEST_TEMPLATE_PATH)
-
+def find_replace(directory, find, replace):
+    "Recursively find and replace string in files."
+    for path, dirs, files in os.walk(os.path.abspath(directory)):
+        for fname in files:
+            fpath = os.path.join(path, fname)
+            with open(fpath) as f:
+                s = f.read()
+            s = s.replace(find, replace)
+            with open(fpath, 'w') as f:
+                f.write(s)
 
 def valid_name(name):
     if re.match(r'^[a-z_]\w*$', name, re.I) is not None:
@@ -26,29 +36,30 @@ def valid_name(name):
 @cli(description=__doc__)
 def parser(options):
     project_name = options.project_name
+    harvest_version = options.harvest_version or config.TEMPLATE_REPO_DEFAULT_VERSION
     create_env = options.create_env
     allow_input = options.allow_input
-    verbose = options.verbose
+    verbosity = options.verbosity
 
     if not valid_name(project_name):
         print(red("Error: The project name '{0}' must be a valid Python "
             "identifier.".format(project_name)))
-        sys.exit()
+        sys.exit(1)
 
     # Ensure the name does not conflict with an existing Python module
     try:
         __import__(project_name)
         print(red("Error: The project name '{0}' conflicts with an existing "
             "Python module. Please choose another name.".format(project_name)))
-        sys.exit()
+        sys.exit(1)
     except ImportError:
         pass
 
     hidden_output = []
 
-    if verbose < 1:
+    if verbosity < 1:
         hidden_output.append('stdout')
-    if verbose < 2:
+    if verbosity < 2:
         hidden_output.append('running')
 
     print(green("Setting up project '{0}'...".format(project_name)))
@@ -62,14 +73,62 @@ def parser(options):
         full_env_path = os.path.abspath(env_path)
 
     @virtualenv(full_env_path)
-    def install_django():
-        print(green('- Installing Django'))
-        local('pip install "django>=1.5,<1.6"')
+    def create_project(harvest_version, project_name):
+        package_name = project_dir = project_name
 
-    @virtualenv(full_env_path)
-    def create_project(project_name):
-        print(green("- Creating new Harvest project '{0}'".format(project_name)))
-        local('django-admin.py startproject {0} {1}'.format(STARTPROJECT_ARGS, project_name))
+        if os.path.exists(project_dir):
+            print(red('Error: project directory already exists'))
+            sys.exit(1)
+
+        archive_url = config.TEMPLATE_ARCHIVE_URL.format(harvest_version)
+        archive = config.TEMPLATE_ARCHIVE.format(harvest_version)
+
+        download = True
+        if os.path.exists(archive):
+            download = prompt('{0} archive already exists. Redownload? '.format(archive),
+                    default='n', validate=r'^[YyNn]$').lower()
+            if download == 'n':
+                download = False
+            else:
+                os.remove(archive)
+
+        if download:
+            print(green('- Downloading Harvest @ {0}'.format(harvest_version)))
+            local('wget -O "{0}" "{1}"'.format(archive, archive_url))
+
+        # Expected directory name of template
+        template_dir = zipfile.ZipFile(archive).namelist()[0].rstrip('/')
+
+        # Remove existing unarchived directory
+        if os.path.exists(template_dir):
+            local('rm -rf {0}'.format(template_dir))
+
+        with hide(*hidden_output):
+            local('unzip {0}'.format(archive))
+            local('rm -rf {0}'.format(archive))
+
+        # Rename template to project name
+        local('mv {0} {1}'.format(template_dir, project_dir))
+
+        # Get the template's main package name
+        cparser = ConfigParser()
+        cparser.read(os.path.join(project_dir, config.HARVESTRC_PATH))
+        old_package_name = cparser.get('harvest', 'package')
+
+        # Replace old package name with new one
+        find_replace(project_dir, old_package_name, package_name)
+
+        # Rename package to new name
+        with lcd(project_dir):
+            local('mv {0} {1}'.format(old_package_name, package_name))
+
+        # Set the new package name and version
+        cparser.set('harvest', 'package', package_name)
+        cparser.set('harvest', 'version', template_dir.split('-')[-1])
+
+        with lcd(project_dir):
+            with open(config.HARVESTRC_PATH, 'w') as rc:
+                cparser.write(rc)
 
     @virtualenv(full_env_path)
     def install_deps():
@@ -93,9 +152,8 @@ def parser(options):
         if create_env:
             create_virtualenv(env_path)
 
-        install_django()
-
-        create_project(project_name)
+        # Create the project for the specified harvest version
+        create_project(harvest_version, project_name)
 
         # Change into project directory for next set of commands..
         os.chdir(project_name)
@@ -130,8 +188,10 @@ def parser(options):
 
 parser.add_argument('project_name', help='Name of the Harvest project. This '
     'must be a valid Python identifier.')
-parser.add_argument('-v', '--verbose', action='count',
-    help='Print stdout output during installation process.')
+parser.add_argument('--harvest-version', help='Harvest project version to'
+    'create this project from.')
+parser.add_argument('-v', '--verbosity', action='count', default=0,
+    help='Increase verbosity of output.')
 parser.add_argument('--no-env', action='store_false', dest='create_env',
     help='Prevents creating a virtualenv and sets up the project in the '
         'current directory.')
