@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import harvest
-from harvest.commands import init, init_demo, update
+from harvest.commands import init, init_demo, update, upgrade
 try:
     from collections import OrderedDict
 except ImportError:
@@ -23,6 +23,7 @@ commands = OrderedDict([
     ('init', init),
     ('init-demo', init_demo),
     ('update', update),
+    ('upgrade', upgrade),
 ])
 
 # Top-level argument parser
