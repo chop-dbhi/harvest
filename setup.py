@@ -28,10 +28,10 @@ kwargs = {
     'version': __import__('harvest').get_version(),
     'author': 'The Children\'s Hospital of Philadelphia',
     'author_email': 'cbmisupport@email.chop.edu',
-    'description': 'Harvest project template',
+    'description': 'Harvest Command Line Tool',
     'license': 'BSD',
     'keywords': 'harvest metadata avocado serrano cilantro django',
-    'url': 'http://cbmi.github.com/harvest/',
+    'url': 'https://github.com/cbmi/harvest/',
     'classifiers': [
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: BSD License',
