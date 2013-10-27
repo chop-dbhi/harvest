@@ -1,25 +1,52 @@
-# Name of the dos-ini file containing the harvest config files
-HARVESTRC_PATH = '.harvestrc'
+import os
+import ConfigParser
+from .constants import HARVESTRC_PATH
 
-DEFAULT_PACKAGE_NAME = 'harvest_project'
+class HarvestConfig(object):
+    """Dict-like object for the Harvest project's configuration options.
+    This interfaces with a dos-ini file.
+    """
+    def __init__(self, path=None):
+        self.path = path or os.getcwd()
+        self.parser = ConfigParser.ConfigParser()
+        self.parser.read(self.rcpath)
 
-GITHUB_API_BETA_ACCEPT = 'application/vnd.github.manifold-preview'
+        self.default_section = 'harvest'
 
-GITHUB_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+        # Ensure the default section is defined
+        if not self.parser.has_section(self.default_section):
+            self.parser.add_section(self.default_section)
 
-# Name of the default template repo
-TEMPLATE_REPO = 'harvest-template'
+    @property
+    def rcpath(self):
+        return os.path.join(self.path, HARVESTRC_PATH)
 
-# API URL for all releases for template repo
-TEMPLATE_RELEASES_API_URL = 'https://api.github.com/repos/cbmi/' + TEMPLATE_REPO + '/releases'
+    def __getitem__(self, key):
+        try:
+            return self.parser.get(self.default_section, key)
+        except ConfigParser.NoOptionError:
+            raise KeyError(key)
 
-TEMPLATE_REPO_URL = 'https://github.com/cbmi/' + TEMPLATE_REPO
+    def __setitem__(self, key, value):
+        self.set(key, value)
 
-# Template URL for generating a patch for the diff range
-TEMPLATE_PATCH_URL = TEMPLATE_REPO_URL + '/compare/{0}...{1}.patch'
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
-# Template URL for downloading an archive (zip) of a specific version of the template
-TEMPLATE_ARCHIVE_URL = TEMPLATE_REPO_URL + '/archive/{0}.zip'
+    def set(self, key, value):
+        self.parser.set(self.default_section, key, value)
 
-# Template string for the name of the archive
-TEMPLATE_ARCHIVE = TEMPLATE_REPO + '-{0}.zip'
+    def write(self):
+        with open(self.rcpath, 'w') as f:
+            self.parser.write(f)
+
+    def exists(self):
+        "Returns true if the config exists on the filesystem."
+        return os.path.exists(self.rcpath)
+
+    def reread(self):
+        "Re-reads the config file."
+        self.parser.read(self.rcpath)
