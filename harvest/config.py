@@ -7,9 +7,9 @@ class HarvestConfig(object):
     This interfaces with a dos-ini file.
     """
     def __init__(self, path=None):
-        self.path = path or os.getcwd()
+        self.path = path
         self.parser = ConfigParser.ConfigParser()
-        self.parser.read(self.rcpath)
+        self.reread()
 
         self.default_section = 'harvest'
 
@@ -19,7 +19,8 @@ class HarvestConfig(object):
 
     @property
     def rcpath(self):
-        return os.path.join(self.path, HARVESTRC_PATH)
+        if self.path:
+            return os.path.join(self.path, HARVESTRC_PATH)
 
     def __getitem__(self, key):
         try:
@@ -45,8 +46,11 @@ class HarvestConfig(object):
 
     def exists(self):
         "Returns true if the config exists on the filesystem."
-        return os.path.exists(self.rcpath)
+        if self.path:
+            return os.path.exists(self.rcpath)
+        return False
 
     def reread(self):
         "Re-reads the config file."
-        self.parser.read(self.rcpath)
+        if self.rcpath:
+            self.parser.read(self.rcpath)

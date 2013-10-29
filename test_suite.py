@@ -42,14 +42,10 @@ class HarvestBundleTestCase(BaseTestCase):
 
         # Download template and unzip it into specified path (which is
         # temporary by default)
-        b.setup()
+        b.setup(path=self.local_dir)
         self.assertTrue(b.version is not None)
         self.assertEqual(b.config.get('version'), b.version)
         self.assertTrue(b.package in os.listdir(b.path))
-
-        # Move it from the temporary location
-        b.move(self.local_dir)
-        self.assertEqual(os.path.basename(b.path), self.local_dir)
 
         # Create a zipfile
         b.zip(self.archive_name)
@@ -62,18 +58,18 @@ class HarvestBundleTestCase(BaseTestCase):
 
     def test_path(self):
         "Create bundle at a specific path."
-        b = HarvestBundle(self.local_dir, name='My New Project!')
+        b = HarvestBundle(name='My New Project!', path=self.local_dir)
         b.zip(self.archive_name)
         self.assertTrue(os.path.exists(self.archive_name))
 
     def test_existing(self):
         "Initialize bundle for existing project."
         # Setup new bundle
-        b = HarvestBundle(self.local_dir, name='My New Project!')
+        b = HarvestBundle(name='My New Project!', path=self.local_dir)
         b.setup()
 
         # Initialize new bundle for at the same directory
-        b2 = HarvestBundle(self.local_dir)
+        b2 = HarvestBundle(path=self.local_dir)
 
         # Ensure the properties are the same
         self.assertEqual(b.path, b2.path)
@@ -82,7 +78,7 @@ class HarvestBundleTestCase(BaseTestCase):
 
     def test_upgrade(self):
         "Test bundle upgrade."
-        b = HarvestBundle(self.local_dir, name='Test Project')
+        b = HarvestBundle(name='Test Project', path=self.local_dir)
         # One version behind
         b.version = b.available_versions[1]
         # Download and setup

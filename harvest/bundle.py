@@ -29,11 +29,7 @@ class HarvestBundle(object):
 
     The bundle can be compressed as a zip-file for distribution.
     """
-    def __init__(self, path=None, name=None, package=None, version=None):
-        # Initial path is temporary if none is provided
-        if not path:
-            path = tempfile.mkdtemp()
-
+    def __init__(self, name=None, package=None, version=None, path=None):
         config = HarvestConfig(path)
 
         # Attempt to get the package from config
@@ -77,11 +73,22 @@ class HarvestBundle(object):
         if not version:
             version = config.get('version')
 
+        self._path = None
+
         self.name = name
         self.package = package
         self.version = version
         self.config = config
         self.path = path
+
+    def _get_path(self):
+        return self._path
+
+    def _set_path(self, path):
+        self._path = path
+        self.config.path = path
+
+    path = property(_get_path, _set_path)
 
     @property
     def available_versions(self):
@@ -97,7 +104,7 @@ class HarvestBundle(object):
         "Returns true if this project is using the latest release."
         return self.latest_version == self.version
 
-    def setup(self):
+    def setup(self, path=None):
         if self.config.exists():
             return
 
@@ -107,6 +114,13 @@ class HarvestBundle(object):
             version = self.latest_version
 
         archive_path = utils.fetch_template_archive(version)
+
+        # Path supplied, otherwise fallback to temp path if none is already set
+        if path:
+            self.path = path
+        elif not self.path:
+            self.path = tempfile.mkdtemp()
+
         utils.extract_template_archive(archive_path, self.path)
 
         utils.find_replace(self.path, [
@@ -115,14 +129,6 @@ class HarvestBundle(object):
 
         self.version = version
         self.config.reread()
-
-    def move(self, path):
-        "Move source directory to new location."
-        self.setup()
-        path = os.path.abspath(path)
-        shutil.move(self.path, path)
-        self.path = path
-        self.config.path = path
 
     def zip(self, filename):
         "Writes the contents of the bundle to a zip file."
