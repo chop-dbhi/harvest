@@ -128,7 +128,7 @@ class HarvestBundle(object):
         ])
 
         self.version = version
-        self.config.reread()
+        self.config.read()
 
     def zip(self, filename):
         "Writes the contents of the bundle to a zip file."
@@ -165,7 +165,7 @@ class HarvestBundle(object):
                 try:
                     # Apply patch, ensure the exit code is clean
                     sh.git.apply(patch.name, directory=self.path)
-                    self.config.reread()
+                    self.config.read()
                     self.version = version
                 except sh.ErrorReturnCode:
                     print('There was a problem applying the patch.')

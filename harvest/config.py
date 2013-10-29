@@ -9,7 +9,7 @@ class HarvestConfig(object):
     def __init__(self, path=None):
         self.path = path
         self.parser = ConfigParser.ConfigParser()
-        self.reread()
+        self.read()
 
         self.default_section = 'harvest'
 
@@ -50,7 +50,7 @@ class HarvestConfig(object):
             return os.path.exists(self.rcpath)
         return False
 
-    def reread(self):
+    def read(self):
         "Re-reads the config file."
         if self.rcpath:
             self.parser.read(self.rcpath)
