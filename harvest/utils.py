@@ -84,6 +84,10 @@ def fetch_template_archive(version):
     return _template_cache[version]
 
 def extract_template_archive(archive_path, path):
+    # Ensure the path exists
+    if not os.path.exists(path):
+        os.makedirs(path, 0755)
+
     # Extract contents into temporary directory
     archive = ZipFile(archive_path)
     tmpdir = tempfile.mkdtemp()
