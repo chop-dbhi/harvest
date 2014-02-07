@@ -11,7 +11,7 @@ def create_virtualenv(env_path):
             "directory with the same already exists.".format(env_path)))
         sys.exit()
     print(green("- Setting up a virtual environment '{0}'".format(env_path)))
-    local('virtualenv {0}'.format(env_path))
+    local('virtualenv {0}'.format(env_path), shell='/bin/bash')
     os.chdir(env_path)
 
 
