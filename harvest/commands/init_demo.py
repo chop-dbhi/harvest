@@ -79,12 +79,12 @@ def parser(options):
     @virtualenv(full_env_path)
     def install_deps():
         print(green('- Downloading and installing dependencies'))
-        local('pip install -r requirements.txt')
+        local('pip install -r requirements.txt', shell='/bin/bash')
 
     @virtualenv(full_env_path)
     def collect_static():
         print(green('- Collecting static files'))
-        local('make collect')
+        local('make collect', shell='/bin/bash')
 
     with hide(*hidden_output):
         if create_env:

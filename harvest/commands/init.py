@@ -94,21 +94,21 @@ def parser(options):
 
         if download:
             print(green('- Downloading Harvest @ {0}'.format(harvest_version)))
-            local('wget -O "{0}" "{1}"'.format(archive, archive_url))
+            local('wget -O "{0}" "{1}"'.format(archive, archive_url), shell='/bin/bash')
 
         # Expected directory name of template
         template_dir = zipfile.ZipFile(archive).namelist()[0].rstrip('/')
 
         # Remove existing unarchived directory
         if os.path.exists(template_dir):
-            local('rm -rf {0}'.format(template_dir))
+            local('rm -rf {0}'.format(template_dir), shell='/bin/bash')
 
         with hide(*hidden_output):
-            local('unzip {0}'.format(archive))
-            local('rm -rf {0}'.format(archive))
+            local('unzip {0}'.format(archive), shell='/bin/bash')
+            local('rm -rf {0}'.format(archive), shell='/bin/bash')
 
         # Rename template to project name
-        local('mv {0} {1}'.format(template_dir, project_dir))
+        local('mv {0} {1}'.format(template_dir, project_dir), shell='/bin/bash')
 
         # Get the template's main package name
         cparser = ConfigParser()
@@ -120,7 +120,7 @@ def parser(options):
 
         # Rename package to new name
         with lcd(project_dir):
-            local('mv {0} {1}'.format(old_package_name, package_name))
+            local('mv {0} {1}'.format(old_package_name, package_name), shell='/bin/bash')
 
         # Set the new package name and version
         cparser.set('harvest', 'package', package_name)
@@ -133,12 +133,12 @@ def parser(options):
     @virtualenv(full_env_path)
     def install_deps():
         print(green('- Downloading and installing dependencies'))
-        local('pip install -r requirements.txt')
+        local('pip install -r requirements.txt', shell='/bin/bash')
 
     @virtualenv(full_env_path)
     def collect_static():
         print(green('- Collecting static files'))
-        local('make collect')
+        local('make collect', shell='/bin/bash')
 
     @virtualenv(full_env_path)
     def syncdb(allow_input):
@@ -146,7 +146,7 @@ def parser(options):
         cmd = './bin/manage.py syncdb --migrate'
         if not allow_input:
             cmd += ' --noinput'
-        local(cmd)
+        local(cmd, shell='/bin/bash')
 
     with hide(*hidden_output):
         if create_env:
