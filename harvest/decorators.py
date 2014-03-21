@@ -46,8 +46,8 @@ def virtualenv(path):
         def inner(*args, **kwargs):
             if path is not None:
                 with prefix('source {0}'.format(activate)):
-                    func(*args, **kwargs)
+                    return func(*args, **kwargs)
             else:
-                func(*args, **kwargs)
+                return func(*args, **kwargs)
         return inner
     return decorator
