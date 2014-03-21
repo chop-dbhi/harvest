@@ -81,7 +81,7 @@ def parser(options):
             sys.exit(1)
 
         if template:
-            archive_url = '%s/archive/HEAD.zip' % template
+            archive_url = '{0}/archive/HEAD.zip'.format(template)
             archive = 'custom-template.zip'
         else:
             archive_url = config.TEMPLATE_ARCHIVE_URL.format(harvest_version)
