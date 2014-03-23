@@ -53,6 +53,17 @@ prompts (unless `--no-input` is passed)
 - Collects the static CSS and JavaScript files (mainly due to Cilantro)
 - Prints out a message to perform a couple commands in your shell
 
+`--template` - Specify a template to base your Harvest application on. By
+default `harvest init` will base its build off of
+`https://github.com/cbmi/harvest-template`. By passing a URL to this option
+`harvest init` will attempt to bootstrap the project based on the endpoint
+specified. Additionally, if your provided template contains a Fabric fabfile
+containing a `harvest_bootstrap` task the init command will offload all
+bootstrapping tasks beyond creating the virtualenv and installing of
+dependencies to the `harvest_bootstrap` task. This could be useful in situations
+where further assumptions can be made about a new Harvest deployment
+(i.e. containerization, use of a specific DB, specific Django models, etc.).
+
 **Post-Setup**
 
 After creating a new Harvest project, the next step is to define a few Django

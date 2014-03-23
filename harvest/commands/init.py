@@ -32,7 +32,6 @@ def valid_name(name):
         return True
     return False
 
-
 @cli(description=__doc__)
 def parser(options):
     project_name = options.project_name
@@ -40,6 +39,7 @@ def parser(options):
     create_env = options.create_env
     allow_input = options.allow_input
     verbosity = options.verbosity
+    template = options.template
 
     if not valid_name(project_name):
         print(red("Error: The project name '{0}' must be a valid Python "
@@ -80,8 +80,12 @@ def parser(options):
             print(red('Error: project directory already exists'))
             sys.exit(1)
 
-        archive_url = config.TEMPLATE_ARCHIVE_URL.format(harvest_version)
-        archive = config.TEMPLATE_ARCHIVE.format(harvest_version)
+        if template:
+            archive_url = '{0}/archive/HEAD.zip'.format(template)
+            archive = 'custom-template.zip'
+        else:
+            archive_url = config.TEMPLATE_ARCHIVE_URL.format(harvest_version)
+            archive = config.TEMPLATE_ARCHIVE.format(harvest_version)
 
         download = True
         if os.path.exists(archive):
@@ -148,6 +152,19 @@ def parser(options):
             cmd += ' --noinput'
         local(cmd, shell='/bin/bash')
 
+    @virtualenv(full_env_path)
+    def get_available_fabric_cmds():
+        with hide(*hidden_output):
+            avail_cmds = local('fab -l | grep -Eo "\w*$" | xargs', capture=True)
+        avail_cmds = avail_cmds.split(' ')
+        return avail_cmds
+
+    @virtualenv(full_env_path)
+    def template_bootstrap(allow_input):
+        print(green('- Running Template\'s Bootstrapping Tasks'))
+        cmd = 'fab harvest_bootstrap'
+        local(cmd)
+
     with hide(*hidden_output):
         if create_env:
             create_virtualenv(env_path)
@@ -161,30 +178,34 @@ def parser(options):
         # Ensure manage.py is executable..
         managepy_chmod()
 
-    with hide('running'):
+        # Install dependencies..
         install_deps()
 
-    with hide(*hidden_output):
+        # Check the downloaded templates fabfile for available commands
+        avail_cmds = get_available_fabric_cmds()
+
+    # Check the available commands to see if it has a harvest_bootstrap command
+    # if not, continue standard bootstrap procedure.
+    if 'harvest_bootstrap' not in avail_cmds:
         collect_static()
-
-    hidden_output = ['running']
-    if not allow_input:
-        hidden_output.append('stdout')
-
-    # Refrain from blocking stdout due to the prompts..
-    with hide(*hidden_output):
         syncdb(allow_input)
-
-    print(green('\nComplete! Copy and paste the following in your shell:\n'))
-
-    if create_env:
-        print(green('cd {0}/{1}\nsource ../bin/activate'.format(env_path, project_name)))
     else:
-        print(green('cd {0}'.format(project_name)))
+        template_bootstrap(allow_input)
 
-    print(green('./bin/manage.py runserver'))
-    print(green('\nOpen up a web browser and go to: http://localhost:8000\n'))
+    if not template:
+        print(green('\nComplete! Copy and paste the following in your shell:\n'))
 
+        if create_env:
+            print(green('cd {0}/{1}\nsource ../bin/activate'.format(env_path, project_name)))
+        else:
+            print(green('cd {0}'.format(project_name)))
+
+        print(green('./bin/manage.py runserver'))
+        print(green('\nOpen up a web browser and go to: http://localhost:8000\n'))
+    else:
+        print(green('\nComplete! The Harvest application has been created according'))
+        print(green('to your custom template. Make sure that you sync Django\'s default'))
+        print(green('models to your configured DB and collect static files as necessary.'))
 
 parser.add_argument('project_name', help='Name of the Harvest project. This '
     'must be a valid Python identifier.')
@@ -197,3 +218,5 @@ parser.add_argument('--no-env', action='store_false', dest='create_env',
         'current directory.')
 parser.add_argument('--no-input', action='store_false', dest='allow_input',
     help='Prevents interactive prompts during setup.')
+parser.add_argument('-t','--template', help='Specify Django Harvest template'
+    ' to base this project on.')
