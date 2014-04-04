@@ -58,6 +58,7 @@ def parser(options):
     demo_name = options.demo_name
     create_env = options.create_env
     verbose = options.verbose
+    venv_wrap = options.venv_wrap
 
     hidden_output = []
 
@@ -73,22 +74,33 @@ def parser(options):
 
     # Check for virtualenv
     if create_env:
-        env_path = '{0}-env'.format(demo_name)
+        if venv_wrap:
+            try:
+                env_path = os.path.join(os.environ['WORKON_HOME'], demo_name)
+            except KeyError:
+                print('Virtualenvwrapper WORKON_HOME environment variable not defined')
+                raise
+        else:
+            env_path = '{0}-env'.format(demo_name)
+
         full_env_path = os.path.abspath(env_path)
 
-    @virtualenv(full_env_path)
+    @virtualenv(full_env_path, venv_wrap, demo_name)
     def install_deps():
         print(green('- Downloading and installing dependencies'))
         local('pip install -r requirements.txt', shell='/bin/bash')
 
-    @virtualenv(full_env_path)
+    @virtualenv(full_env_path, venv_wrap, demo_name)
     def collect_static():
         print(green('- Collecting static files'))
         local('make collect', shell='/bin/bash')
 
     with hide(*hidden_output):
         if create_env:
-            create_virtualenv(env_path)
+            if venv_wrap:
+                create_virtualenv(env_path, venv_wrap=True, demo_name=demo_name)
+            else:
+                create_virtualenv(env_path)
 
         # Download the demo
         download_demo(demo_name)
@@ -123,3 +135,5 @@ parser.add_argument('-v', '--verbose', action='count',
 parser.add_argument('--no-env', action='store_false', dest='create_env',
     help='Prevents creating a virtualenv and sets up the project in the '
         'current directory.')
+parser.add_argument('-w','--venv-wrap', action='store_true', dest='venv_wrap',
+    help='Use target systems instance of virtualenvwrapper to build')

@@ -34,16 +34,18 @@ def cli(*args, **kwargs):
     return decorator
 
 
-def virtualenv(path):
+def virtualenv(path, venv_wrap, project_name):
     "Wraps a function and prefixes the call with the virtualenv active."
     if path is None:
         activate = None
     else:
         activate = os.path.join(path, 'bin/activate')
-
     def decorator(func):
         @wraps(func)
         def inner(*args, **kwargs):
+            if venv_wrap:
+                with prefix('source /usr/local/bin/virtualenvwrapper.sh && workon {0}'.format(project_name)):
+                    return func(*args, **kwargs)
             if path is not None:
                 with prefix('source {0}'.format(activate)):
                     return func(*args, **kwargs)
