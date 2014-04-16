@@ -19,6 +19,16 @@ This version of Harvest requires Python 2.6 or 2.7.
 ```bash
 $ harvest init [--verbose] [--no-env] [--no-input] project_name
 ```
+This command performs the following steps:
+
+- Create a new virtualenv environment (name `project_name`-env)
+- Installs Django
+- Creates a starter project using the built-in Harvest template
+- Installs the base dependencies
+- Syncs and migrates a SQLite database, this requires you to answer a couple
+prompts (unless `--no-input` is passed)
+- Collects the static CSS and JavaScript files (mainly due to Cilantro)
+- Prints out a message to perform a couple commands in your shell
 
 **Arguments**
 
@@ -41,18 +51,6 @@ installed in the correct site-packages directory.
 currently includes the prompt for setting up a superuser during the database
 sync. This is primarily useful for performing scripted builds.
 
-
-This command performs the following steps:
-
-- Create a new virtualenv environment (name `project_name`-env)
-- Installs Django
-- Creates a starter project using the built-in Harvest template
-- Installs the base dependencies
-- Syncs and migrates a SQLite database, this requires you to answer a couple
-prompts (unless `--no-input` is passed)
-- Collects the static CSS and JavaScript files (mainly due to Cilantro)
-- Prints out a message to perform a couple commands in your shell
-
 `--template` - Specify a template to base your Harvest application on. By
 default `harvest init` will base its build off of
 `https://github.com/cbmi/harvest-template`. By passing a URL to this option
@@ -63,6 +61,12 @@ bootstrapping tasks beyond creating the virtualenv and installing of
 dependencies to the `harvest_bootstrap` task. This could be useful in situations
 where further assumptions can be made about a new Harvest deployment
 (i.e. containerization, use of a specific DB, specific Django models, etc.).
+
+`--venv-wrap` - If you are using virtualenvwrapper to handle your python virtual
+environments you can set this flag to create a virtualenv in accordance with
+the conventions of that utility -- The name of your environment will correspond
+to your project name and will be created in the directory specified by the
+`WORKON_HOME` environment variable.
 
 **Post-Setup**
 

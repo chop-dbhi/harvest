@@ -40,6 +40,7 @@ def parser(options):
     allow_input = options.allow_input
     verbosity = options.verbosity
     template = options.template
+    venv_wrap = options.venv_wrap
 
     if not valid_name(project_name):
         print(red("Error: The project name '{0}' must be a valid Python "
@@ -69,10 +70,18 @@ def parser(options):
 
     # Check for virtualenv
     if create_env:
-        env_path = '{0}-env'.format(project_name)
-        full_env_path = os.path.abspath(env_path)
+        if venv_wrap:
+            try:
+                env_path = os.path.join(os.environ['WORKON_HOME'], project_name)
+            except KeyError:
+                print('Virtualenvwrapper WORKON_HOME environment variable not defined')
+                raise
+            full_env_path = None
+        else:
+            env_path = '{0}-env'.format(project_name)
+            full_env_path = os.path.abspath(env_path)
 
-    @virtualenv(full_env_path)
+    @virtualenv(full_env_path, venv_wrap, project_name)
     def create_project(harvest_version, project_name):
         package_name = project_dir = project_name
 
@@ -134,17 +143,17 @@ def parser(options):
             with open(config.HARVESTRC_PATH, 'w') as rc:
                 cparser.write(rc)
 
-    @virtualenv(full_env_path)
+    @virtualenv(full_env_path, venv_wrap, project_name)
     def install_deps():
         print(green('- Downloading and installing dependencies'))
         local('pip install -r requirements.txt', shell='/bin/bash')
 
-    @virtualenv(full_env_path)
+    @virtualenv(full_env_path, venv_wrap, project_name)
     def collect_static():
         print(green('- Collecting static files'))
         local('make collect', shell='/bin/bash')
 
-    @virtualenv(full_env_path)
+    @virtualenv(full_env_path, venv_wrap, project_name)
     def syncdb(allow_input):
         print(green('- Setting up a SQLite database'))
         cmd = './bin/manage.py syncdb --migrate'
@@ -152,14 +161,14 @@ def parser(options):
             cmd += ' --noinput'
         local(cmd, shell='/bin/bash')
 
-    @virtualenv(full_env_path)
+    @virtualenv(full_env_path, venv_wrap, project_name)
     def get_available_fabric_cmds():
         with hide(*hidden_output):
             avail_cmds = local('fab -l | grep -Eo "\w*$" | xargs', capture=True)
         avail_cmds = avail_cmds.split(' ')
         return avail_cmds
 
-    @virtualenv(full_env_path)
+    @virtualenv(full_env_path, venv_wrap, project_name)
     def template_bootstrap(allow_input):
         print(green('- Running Template\'s Bootstrapping Tasks'))
         cmd = 'fab harvest_bootstrap'
@@ -167,7 +176,10 @@ def parser(options):
 
     with hide(*hidden_output):
         if create_env:
-            create_virtualenv(env_path)
+            if venv_wrap:
+                create_virtualenv(env_path, venv_wrap=True, project_name=project_name)
+            else:
+                create_virtualenv(env_path)
 
         # Create the project for the specified harvest version
         create_project(harvest_version, project_name)
@@ -220,3 +232,5 @@ parser.add_argument('--no-input', action='store_false', dest='allow_input',
     help='Prevents interactive prompts during setup.')
 parser.add_argument('-t','--template', help='Specify Django Harvest template'
     ' to base this project on.')
+parser.add_argument('-w','--venv-wrap', action='store_true', dest='venv_wrap',
+    help='Use target systems instance of virtualenvwrapper to build')
