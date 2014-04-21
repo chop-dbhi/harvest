@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 install_requires = [
     'Fabric>=1.8',
-    'virtualenv>=1.10',
+    'virtualenv>=1.11',
 ]
 
 if sys.version_info < (2, 7):
