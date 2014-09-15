@@ -9,9 +9,6 @@ TEST_PROJECT_ENV = 'project-env'
 
 class FullTestCase(unittest.TestCase):
     def setUp(self):
-        # Remove existing
-        subprocess.call(['pip', 'uninstall', '--yes', '--quiet', 'django'])
-
         if os.path.exists(TEST_PROJECT):
             shutil.rmtree(TEST_PROJECT)
         if os.path.exists(TEST_PROJECT_ENV):

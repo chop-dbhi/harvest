@@ -4,14 +4,12 @@ python:
     - 2.6
     - 2.7
 
-virtualenv:
-    system_site_packages: true
-
 install:
-    - pip install -q coveralls --use-mirrors
+    - pip install -q coveralls
+    - pip install -q .
 
 script:
-    - PYTHONPATH=. coverage run setup.py test
+    - coverage run test_suite.py
 
 after_success:
     - coveralls
