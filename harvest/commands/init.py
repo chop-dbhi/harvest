@@ -165,10 +165,10 @@ def parser(options):
     def get_available_fabric_cmds():
         try:
             with hide(*hidden_output):
-                avail_cmds = local('fab -l | grep -Eo "\w*$" | xargs', shell='bin/bash', capture=True)
+                avail_cmds = local('fab -l | grep -Eo "\w*$" | xargs', shell='/bin/bash', capture=True)
             avail_cmds = avail_cmds.split(' ')
             return avail_cmds
-        except:
+        except Exception:
             return []
 
     @virtualenv(full_env_path, venv_wrap, project_name)
