@@ -1,6 +1,6 @@
 # Harvest
 
-[![Build Status](https://travis-ci.org/cbmi/harvest.png?branch=master)](https://travis-ci.org/cbmi/harvest) [![Coverage Status](https://coveralls.io/repos/cbmi/harvest/badge.png)](https://coveralls.io/r/cbmi/harvest) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cbmi/harvest/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Build Status](https://travis-ci.org/cbmi/harvest.png?branch=master)](https://travis-ci.org/cbmi/harvest) [![Coverage Status](https://img.shields.io/coveralls/cbmi/harvest.svg)](https://coveralls.io/r/cbmi/harvest?branch=master) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cbmi/harvest/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 ## Install
 
