@@ -6,7 +6,7 @@ TEMPLATE_REPO = 'harvest-template'
 
 TEMPLATE_REPO_DEFAULT_VERSION = 'HEAD'
 
-TEMPLATE_REPO_URL = 'https://github.com/cbmi/' + TEMPLATE_REPO
+TEMPLATE_REPO_URL = 'https://github.com/chop-dbhi/' + TEMPLATE_REPO
 
 # Template URL for generating a patch for the diff range
 TEMPLATE_PATCH_URL = TEMPLATE_REPO_URL + '/compare/{0}...{1}.patch'
