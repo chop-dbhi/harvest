@@ -1,6 +1,27 @@
 # Harvest
 
-[![Build Status](https://travis-ci.org/cbmi/harvest.png?branch=master)](https://travis-ci.org/cbmi/harvest) [![Coverage Status](https://img.shields.io/coveralls/cbmi/harvest.svg)](https://coveralls.io/r/cbmi/harvest?branch=master) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cbmi/harvest/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Build Status](https://travis-ci.org/chop-dbhi/harvest.svg?branch=master)](https://travis-ci.org/chop-dbhi/harvest) [![Coverage Status](https://img.shields.io/coveralls/chop-dbhi/harvest.svg)](https://coveralls.io/r/chop-dbhi/harvest)
+
+## What Is It
+
+- Ad-hoc query engine for relational databases
+  - Uses Django to build SQL and execute the query
+  - Uses a simple JSON-based DSL for declaring the query
+  - Uses metadata index for query evaluation and preparation
+  - Does not require knowing how data model components are related
+- Modern HTML5 Web client for building and interacting with queries completely driven by a robust REST API
+- Save queries for future reference
+- Share queries for increased knowledge dissemination
+- Export data into CSV, Excel, and JSON formats
+  - Export an R or SAS bundles containing the data and script for streamlined data analysis
+- Persisted metadata index of the relational data model
+  - Relies on pre-defined Django models to build metadata index
+- User-centric annotations on metadata for improved domain specificity
+- Lightweight "concept" model for improving how fields in a data model are presented for query or viewing purposes
+  - Abstraction used for presentation which is a translation between raw data model and end user.
+    - Descriptors
+    - Custom query interface
+    - Custom output
 
 ## Install
 
