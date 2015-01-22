@@ -11,6 +11,6 @@ Updates this Harvest package.
 @cli(description=__doc__)
 def parser(options):
     with hide('running'):
-        bindir = os.path.dirname(local('which harvest', capture=True), shell='/bin/bash')
+        bindir = os.path.dirname(local('which harvest', capture=True, shell='/bin/bash'))
         pip = os.path.join(bindir, 'pip')
         local('{0} install -U harvest'.format(pip), shell='/bin/bash')
