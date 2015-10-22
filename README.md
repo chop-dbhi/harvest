@@ -74,10 +74,10 @@ sync. This is primarily useful for performing scripted builds.
 
 `--template` - Specify a template to base your Harvest application on. By
 default `harvest init` will base its build off of
-`https://github.com/cbmi/harvest-template`. By passing a URL to this option
-`harvest init` will attempt to bootstrap the project based on the endpoint
-specified. Additionally, if your provided template contains a Fabric fabfile
-containing a `harvest_bootstrap` task the init command will offload all
+`https://github.com/cbmi/harvest-template/archive/HEAD.zip`. By passing a URL to
+this option `harvest init` will attempt to bootstrap the project based on the
+endpoint specified. Additionally, if your provided template contains a Fabric
+fabfile containing a `harvest_bootstrap` task the init command will offload all
 bootstrapping tasks beyond creating the virtualenv and installing of
 dependencies to the `harvest_bootstrap` task. This could be useful in situations
 where further assumptions can be made about a new Harvest deployment
